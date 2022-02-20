@@ -1,0 +1,12 @@
+[package]
+name = "bank-deposit-calculator"
+version = "0.1.0"
+edition = "2021"
+authors = ["Andrew Belunov <cyberpunk.person@gmail.com>"]
+
+[dependencies]
+anyhow = "1.0.54"
+bigdecimal = "0.3.0"
+chrono = "0.4.19"
+percentage = "0.1.0"
+structopt = "0.3.26"
