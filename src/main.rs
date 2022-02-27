@@ -3,12 +3,18 @@ use bigdecimal::{BigDecimal, FromPrimitive};
 use chrono::{Duration, NaiveDate};
 use structopt::StructOpt;
 
-use crate::deposit::CapitalizationDepositPlan;
+use crate::deposit::{DepositType, Payment};
+use crate::deposit::fixed::FixedDepositPlan;
 
 mod deposit;
 
 #[derive(StructOpt)]
 struct DepositCli {
+
+    #[structopt(long = "type", default_value = "fixed")]
+    #[structopt(parse(try_from_str))]
+    deposit_type: DepositType,
+
     #[structopt(long = "amount")]
     current_amount: BigDecimal,
 
@@ -32,19 +38,24 @@ fn main() -> Result<()> {
     println!("Open date is: {}", input.open_date);
     println!("Prolongation date is: {}", input.prolongation_date);
     println!("Rate is: {}", input.rate);
+    println!("Type is: {}", input.deposit_type);
 
-    let deposit_plan = CapitalizationDepositPlan::new(
-        input.current_amount,
-        input.open_date,
-        input.prolongation_date,
-        input.rate,
-    );
+    let deposit_plan = match input.deposit_type {
+        DepositType::FIXED => FixedDepositPlan::new(
+                input.current_amount,
+                input.open_date,
+                input.prolongation_date,
+                input.rate,
+            ),
+        DepositType::SAVE => todo!()
+    };
 
     deposit_plan.payments.iter().for_each(|payment| {
         println!(
-            "For {} amount is {}",
+            "For {} amount is {} + {}",
             payment.month.month.name(),
-            payment.total
+            payment.total,
+            payment.amount
         );
     });
 

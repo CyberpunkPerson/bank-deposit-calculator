@@ -4,24 +4,11 @@ use std::ops::{Add, Sub};
 use bigdecimal::BigDecimal;
 use chrono::{Datelike, Month, NaiveDate};
 
-use crate::{Duration, FromPrimitive};
+use crate::deposit::{DepositPlan, PaymentMonth};
+use crate::{Duration, FromPrimitive, Payment};
+use crate::DepositType::SAVE;
 
-pub trait DepositPlan {
-    fn get_payments(&self) -> LinkedList<Payment>;
-}
-
-pub struct PaymentMonth {
-    pub month: Month,
-    pub days_in_month: u32,
-}
-
-pub struct Payment {
-    pub month: PaymentMonth,
-    pub amount: BigDecimal,
-    pub total: BigDecimal,
-}
-
-pub struct CapitalizationDepositPlan {
+pub(crate) struct FixedDepositPlan {
     current_amount: BigDecimal,
     open_date: NaiveDate,
     prolongation_date: NaiveDate,
@@ -30,7 +17,13 @@ pub struct CapitalizationDepositPlan {
     final_amount: BigDecimal,
 }
 
-impl CapitalizationDepositPlan {
+impl DepositPlan for FixedDepositPlan{
+    fn get_payments(&self) -> &LinkedList<Payment> {
+        &self.payments
+    }
+}
+
+impl FixedDepositPlan {
     pub fn new(
         current_amount: BigDecimal,
         open_date: NaiveDate,
